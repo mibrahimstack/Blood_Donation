@@ -1,6 +1,10 @@
-/* Basic Reset */
-body,
+/* Basic Reset & Smooth Scrolling */
 html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 40px; /* Gives a little breathing room when it scrolls down */
+}
+
+body {
   margin: 0;
   padding: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
