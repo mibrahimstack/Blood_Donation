@@ -252,7 +252,7 @@ app.get('/requests', (req, res) => {
 // ==========================================
 // DATABASE AUTO-SETUP ROUTE
 // ==========================================
-app.get('/setup-db', (req, res) => {
+app.get('/setup-db', async (req, res) => {
   const queries = [
     `CREATE TABLE IF NOT EXISTS Admin (Username VARCHAR(255) UNIQUE, Password VARCHAR(255));`,
     `CREATE TABLE IF NOT EXISTS Donor (Donor_ID INT AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(255), Gender VARCHAR(50), Date_of_Birth DATE, Blood_Type VARCHAR(10));`,
@@ -264,22 +264,17 @@ app.get('/setup-db', (req, res) => {
     `INSERT IGNORE INTO Admin (Username, Password) VALUES ('admin', 'admin123');`
   ];
 
-  let completed = 0;
-  let hasError = false;
-
-  queries.forEach(q => {
-    db.query(q, (err) => {
-      if (err) {
-        console.error("Table creation error:", err);
-        hasError = true;
-      }
-      completed++;
-      if (completed === queries.length) {
-        if (hasError) res.send("Finished with errors. Check Vercel logs.");
-        else res.send("SUCCESS! All tables created in TiDB! You can now use your dashboard.");
-      }
-    });
-  });
+  try {
+    // This forces the server to run each query one at a time, in order!
+    for (let q of queries) {
+      await db.promise().query(q);
+    }
+    res.send("SUCCESS! All tables created in TiDB! You can now use your dashboard.");
+  } catch (err) {
+    console.error("Table creation error:", err);
+    // If it fails, it will print the exact reason on your browser screen!
+    res.send(`FAILED: ${err.message}`); 
+  }
 });
 
 // ==========================================
