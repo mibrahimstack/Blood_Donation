@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blood Donation Management System</title>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+  <header>
+    <h1>Blood Donation Management System</h1>
+  </header>
+  
+  <nav>
+    <button id="donorBtn" class="active">Donors</button>
+    <button id="donationBtn">Donations</button>
+    <button id="bloodBankBtn">Blood Banks</button>
+    <button id="hospitalBtn">Hospitals</button>
+    <button id="requestBtn">Blood Requests</button>
+  </nav>
+
+  
+  
+  <div class="container">
+    <div id="successMessage"></div>
+    
+    <!-- Donor Form -->
+    <div id="donorForm" class="form-section active">
+      
+      <h2>Donor Management</h2>
+      
+      <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <input type="text" id="searchInput" placeholder="Search by ID, Name, or Blood Type (e.g., O+)..." style="flex: 2; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 15px;">
+        <button type="button" id="searchDonorBtn" style="flex: 1; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold;">🔍 Search</button>
+        <button type="button" id="viewDonorsBtn" class="view-btn" style="flex: 1; margin-top: 0; font-size: 15px;">View All Donors</button>
+      </div>
+
+      <h3 style="color: var(--secondary-color); margin-bottom: 15px;">Register New Donor</h3>
+      
+      <form id="addDonorForm">
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Enter donor name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="gender">Gender</label>
+          <select id="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="dob">Date of Birth</label>
+          <input type="date" id="dob" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="blood_type">Blood Type</label>
+          <select id="blood_type" required>
+            <option value="">Select Blood Type</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Phone Numbers</label>
+          <div class="phone-numbers-container">
+            <div id="phoneInputs">
+              <div class="phone-input">
+                <input type="tel" placeholder="Enter phone number" required />
+                <button type="button" class="remove-phone-btn" disabled>×</button>
+              </div>
+            </div>
+            <button type="button" id="addPhoneBtn" class="add-phone-btn">+ Add Phone</button>
+          </div>
+        </div>
+        
+        <button type="submit">Register Donor</button>
+      </form>
+      
+      <!-- Donor Data Section -->
+      <div id="donorDataSection" class="data-section">
+        <h3>Donor Records</h3>
+        <div id="donorDataContent">
+          <table id="donorTable" class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Date of Birth</th>
+                <th>Blood Type</th>
+                <th>Phone Numbers</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <button class="close-btn" onclick="closeDataSection('donorDataSection')">Close</button>
+      </div>
+    </div>
+    
+    <!-- Donation Form -->
+    <div id="donationForm" class="form-section">
+      <h2>Record New Donation</h2>
+      <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <input type="text" id="searchDonationInput" placeholder="Search by Donation ID, Donor ID, or Location..." style="flex: 2; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 15px;">
+        <button type="button" id="searchDonationBtn" style="flex: 1; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold;">🔍 Search</button>
+        <button type="button" id="viewDonationsBtn" class="view-btn" style="flex: 1; margin-top: 0; font-size: 15px;">View All Donations</button>
+      </div>
+      <form id="addDonationForm">
+        <div class="form-group">
+          <label for="donor_id">Donor ID</label>
+          <input type="number" id="donor_id" placeholder="Enter donor ID" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="donation_date">Donation Date</label>
+          <input type="date" id="donation_date" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="quantity">Quantity (ml)</label>
+          <input type="number" id="quantity" placeholder="Enter blood quantity" min="1" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="location">Medical center</label>
+          <input type="text" id="location" placeholder="Enter donation location" required />
+        </div>
+        
+        <button type="submit">Record Donation</button>
+      </form>
+      
+      
+      
+      <!-- Donation Data Section -->
+      <div id="donationDataSection" class="data-section">
+        <h3>Donation Records</h3>
+        <div id="donationDataContent">
+          <table id="donationTable" class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Donor ID</th>
+                <th>Date</th>
+                <th>Quantity (ml)</th>
+                <th>Location</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <button class="close-btn" onclick="closeDataSection('donationDataSection')">Close</button>
+      </div>
+    </div>
+    
+    <!-- Blood Bank Form -->
+    <div id="bloodBankForm" class="form-section">
+      <h2>Add New Blood Bank</h2>
+      <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <input type="text" id="searchBloodBankInput" placeholder="Search by ID, Name, or Location..." style="flex: 2; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 15px;">
+        <button type="button" id="searchBloodBankBtn" style="flex: 1; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold;">🔍 Search</button>
+        <button type="button" id="viewBloodBanksBtn" class="view-btn" style="flex: 1; margin-top: 0; font-size: 15px;">View All Blood Banks</button>
+      </div>
+      <form id="addBloodBankForm">
+        <div class="form-group">
+          <label for="bank_name">Blood Bank Name</label>
+          <input type="text" id="bank_name" placeholder="Enter blood bank name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="bank_location">Location</label>
+          <input type="text" id="bank_location" placeholder="Enter blood bank location" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="capacity">Storage Capacity (units)</label>
+          <input type="number" id="capacity" placeholder="Enter storage capacity" min="1" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="bank_contact">Contact Number</label>
+          <input type="tel" id="bank_contact" placeholder="Enter contact number" required />
+        </div>
+        
+        <button type="submit">Add Blood Bank</button>
+      </form>
+      
+      <!-- Blood Bank Data Section -->
+      <div id="bloodBankDataSection" class="data-section">
+        <h3>Blood Bank Records</h3>
+        <div id="bloodBankDataContent">
+          <table id="bloodBankTable" class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Capacity (units)</th>
+                <th>Contact Number</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <button class="close-btn" onclick="closeDataSection('bloodBankDataSection')">Close</button>
+      </div>
+    </div>
+    
+    <!-- Hospital Form -->
+    <div id="hospitalForm" class="form-section">
+      <h2>Add New Hospital</h2>
+      <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <input type="text" id="searchHospitalInput" placeholder="Search by ID, Name, or Location..." style="flex: 2; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 15px;">
+        <button type="button" id="searchHospitalBtn" style="flex: 1; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold;">🔍 Search</button>
+        <button type="button" id="viewHospitalsBtn" class="view-btn" style="flex: 1; margin-top: 0; font-size: 15px;">View All Hospitals</button>
+      </div>
+      <form id="addHospitalForm">
+        <div class="form-group">
+          <label for="hospital_name">Hospital Name</label>
+          <input type="text" id="hospital_name" placeholder="Enter hospital name" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="hospital_location">Location</label>
+          <input type="text" id="hospital_location" placeholder="Enter hospital location" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="hospital_contact">Contact Number</label>
+          <input type="tel" id="hospital_contact" placeholder="Enter contact number" required />
+        </div>
+        
+        <button type="submit">Add Hospital</button>
+      </form>
+      
+      <!-- Hospital Data Section -->
+      <div id="hospitalDataSection" class="data-section">
+        <h3>Hospital Records</h3>
+        <div id="hospitalDataContent">
+          <table id="hospitalTable" class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Contact Number</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <button class="close-btn" onclick="closeDataSection('hospitalDataSection')">Close</button>
+      </div>
+    </div>
+    
+    <!-- Blood Request Form -->
+    <div id="requestForm" class="form-section">
+      <h2>Create Blood Request</h2>
+      
+      <div class="search-container" style="display: flex; gap: 10px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color);">
+        <input type="text" id="searchRequestInput" placeholder="Search by Request ID, Blood Type, or Urgency..." style="flex: 2; padding: 12px; border: 1px solid var(--border-color); border-radius: 4px; font-size: 15px;">
+        <button type="button" id="searchRequestBtn" style="flex: 1; background-color: #2c3e50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold;">🔍 Search</button>
+        <button type="button" id="viewRequestsBtn" class="view-btn" style="flex: 1; margin-top: 0; font-size: 15px;">View All Requests</button>
+      </div>
+      <form id="addRequestForm">
+        <div class="form-group">
+          <label for="hospital_id">Hospital ID</label>
+          <input type="number" id="hospital_id" placeholder="Enter hospital ID" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="bank_id">Blood Bank ID</label>
+          <input type="number" id="bank_id" placeholder="Enter blood bank ID" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="request_blood_type">Blood Type Required</label>
+          <select id="request_blood_type" required>
+            <option value="">Select Blood Type</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="request_quantity">Quantity Required (units)</label>
+          <input type="number" id="request_quantity" placeholder="Enter quantity required" min="1" required />
+        </div>
+        
+        <div class="form-group">
+          <label for="urgency">Urgency Level</label>
+          <select id="urgency" required>
+            <option value="">Select Urgency</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+            <option value="Critical">Critical</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="request_date">Request Date</label>
+          <input type="date" id="request_date" required />
+        </div>
+        
+        <button type="submit">Submit Request</button>
+      </form>
+      
+      <!-- Blood Request Data Section -->
+      <div id="requestDataSection" class="data-section">
+        <h3>Blood Request Records</h3>
+        <div id="requestDataContent">
+          <table id="requestTable" class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Hospital ID</th>
+                <th>Bank ID</th>
+                <th>Blood Type</th>
+                <th>Quantity</th>
+                <th>Urgency</th>
+                <th>Request Date</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <button class="close-btn" onclick="closeDataSection('requestDataSection')">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script src="script.js"></script>
+  </script>
+</body>
+</html>
