@@ -112,11 +112,9 @@ app.post('/add-request', (req, res) => {
 // SEARCH ROUTES
 // ==========================================
 
-// Search Donors Route
 app.get('/search-donors', (req, res) => {
   const searchTerm = req.query.q;
   const searchQuery = `%${searchTerm}%`;
-
   const searchId = isNaN(searchTerm) ? null : parseInt(searchTerm);
 
   db.query(`
@@ -132,21 +130,15 @@ app.get('/search-donors', (req, res) => {
     WHERE d.Name LIKE ? OR d.Blood_Type LIKE ? OR d.Donor_ID = ?
     GROUP BY d.Donor_ID
   `, [searchQuery, searchQuery, searchId], (err, results) => {
-    if (err) {
-      console.error('Error searching donors:', err);
-      return res.status(500).send(err);
-    }
-    
+    if (err) return res.status(500).send(err);
     const formattedResults = results.map(donor => ({
       ...donor,
       Phone_Numbers: donor.Phone_Numbers ? donor.Phone_Numbers.split(',') : []
     }));
-    
     res.send(formattedResults);
   });
 });
 
-// Search Donations
 app.get('/search-donations', (req, res) => {
   const searchTerm = `%${req.query.q}%`;
   const searchId = isNaN(req.query.q) ? null : parseInt(req.query.q);
@@ -157,7 +149,6 @@ app.get('/search-donations', (req, res) => {
   });
 });
 
-// Search Blood Banks
 app.get('/search-blood-banks', (req, res) => {
   const searchTerm = `%${req.query.q}%`;
   const searchId = isNaN(req.query.q) ? null : parseInt(req.query.q);
@@ -168,7 +159,6 @@ app.get('/search-blood-banks', (req, res) => {
   });
 });
 
-// Search Hospitals
 app.get('/search-hospitals', (req, res) => {
   const searchTerm = `%${req.query.q}%`;
   const searchId = isNaN(req.query.q) ? null : parseInt(req.query.q);
@@ -179,7 +169,6 @@ app.get('/search-hospitals', (req, res) => {
   });
 });
 
-// Search Requests
 app.get('/search-requests', (req, res) => {
   const searchTerm = `%${req.query.q}%`;
   const searchId = isNaN(req.query.q) ? null : parseInt(req.query.q);
@@ -195,7 +184,6 @@ app.get('/search-requests', (req, res) => {
 // FETCH ALL ROUTES (VIEW ALL BUTTONS)
 // ==========================================
 
-// 7. Get Donors with Phones
 app.get('/donors-with-phones', (req, res) => {
   db.query(`
     SELECT 
@@ -209,10 +197,7 @@ app.get('/donors-with-phones', (req, res) => {
     LEFT JOIN Phone_Number p ON d.Donor_ID = p.Donor_ID
     GROUP BY d.Donor_ID
   `, (err, results) => {
-    if (err) {
-      console.error('Error fetching donors with phones:', err);
-      return res.status(500).send(err);
-    }
+    if (err) return res.status(500).send(err);
     const formattedResults = results.map(donor => ({
       ...donor,
       Phone_Numbers: donor.Phone_Numbers ? donor.Phone_Numbers.split(',') : []
@@ -263,6 +248,39 @@ app.get('/requests', (req, res) => {
   });
 });
 
+
+// ==========================================
+// DATABASE AUTO-SETUP ROUTE
+// ==========================================
+app.get('/setup-db', (req, res) => {
+  const queries = [
+    `CREATE TABLE IF NOT EXISTS Admin (Username VARCHAR(255) UNIQUE, Password VARCHAR(255));`,
+    `CREATE TABLE IF NOT EXISTS Donor (Donor_ID INT AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(255), Gender VARCHAR(50), Date_of_Birth DATE, Blood_Type VARCHAR(10));`,
+    `CREATE TABLE IF NOT EXISTS Phone_Number (Donor_ID INT, Phone_Number VARCHAR(50));`,
+    `CREATE TABLE IF NOT EXISTS Donation (Donation_ID INT AUTO_INCREMENT PRIMARY KEY, Donor_ID INT, Date DATE, Quantity INT, Location VARCHAR(255));`,
+    `CREATE TABLE IF NOT EXISTS Blood_Bank (Bank_ID INT AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(255), Location VARCHAR(255), Capacity INT, Contact_Number VARCHAR(50));`,
+    `CREATE TABLE IF NOT EXISTS Hospital (Hospital_ID INT AUTO_INCREMENT PRIMARY KEY, Name VARCHAR(255), Location VARCHAR(255), Contact_Number VARCHAR(50));`,
+    `CREATE TABLE IF NOT EXISTS Blood_Request (Request_ID INT AUTO_INCREMENT PRIMARY KEY, Hospital_ID INT, Bank_ID INT, Blood_Type_Required VARCHAR(10), Quantity_Required INT, Urgency_Level VARCHAR(50), Request_Date DATE);`,
+    `INSERT IGNORE INTO Admin (Username, Password) VALUES ('admin', 'admin123');`
+  ];
+
+  let completed = 0;
+  let hasError = false;
+
+  queries.forEach(q => {
+    db.query(q, (err) => {
+      if (err) {
+        console.error("Table creation error:", err);
+        hasError = true;
+      }
+      completed++;
+      if (completed === queries.length) {
+        if (hasError) res.send("Finished with errors. Check Vercel logs.");
+        else res.send("SUCCESS! All tables created in TiDB! You can now use your dashboard.");
+      }
+    });
+  });
+});
 
 // ==========================================
 // SERVER STARTUP
