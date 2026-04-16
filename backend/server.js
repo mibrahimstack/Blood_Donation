@@ -278,6 +278,67 @@ app.get('/setup-db', async (req, res) => {
 });
 
 // ==========================================
+// DATABASE SEED ROUTE (Generates 50 Pakistani Entries)
+// ==========================================
+app.get('/seed-db', async (req, res) => {
+  try {
+    // Data Pools
+    const firstM = ['Muhammad', 'Ali', 'Usman', 'Bilal', 'Hamza', 'Tariq', 'Hassan', 'Zain', 'Imran', 'Kamran', 'Faisal', 'Zeeshan'];
+    const firstF = ['Fatima', 'Aisha', 'Zainab', 'Sana', 'Hina', 'Nida', 'Khadija', 'Maryam', 'Iqra', 'Rabia', 'Sadia', 'Uzma'];
+    const lasts = ['Khan', 'Ahmed', 'Afridi', 'Khattak', 'Malik', 'Javed', 'Rehman', 'Hussain', 'Shah', 'Qureshi', 'Bibi'];
+    const cities = ['Peshawar', 'Mardan', 'Kohat', 'Islamabad', 'Lahore', 'Karachi', 'Rawalpindi', 'Abbottabad'];
+    const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+    const hospitalBases = ['Lady Reading Hospital', 'Hayatabad Medical Complex', 'Khyber Teaching Hospital', 'Shaukat Khanum', 'PIMS', 'Aga Khan Hospital', 'Jinnah Hospital', 'Services Hospital'];
+    const bankBases = ['Fatimid Foundation', 'Hamza Foundation', 'Frontier Foundation', 'PRCS Blood Bank', 'Sundas Foundation', 'Husaini Blood Bank'];
+
+    // Helper functions for randomness
+    const random = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    let donors = [], phones = [], hospitals = [], banks = [], donations = [], requests = [];
+
+    // Generate 50 rows for everything!
+    for (let i = 1; i <= 50; i++) {
+      // 1. Donors
+      const isMale = Math.random() > 0.5;
+      const name = `${random(isMale ? firstM : firstF)} ${random(lasts)}`;
+      const gender = isMale ? 'Male' : 'Female';
+      const dob = `${randomInt(1980, 2005)}-${String(randomInt(1, 12)).padStart(2, '0')}-${String(randomInt(1, 28)).padStart(2, '0')}`;
+      donors.push(`('${name}', '${gender}', '${dob}', '${random(bloodTypes)}')`);
+
+      // 2. Phone Numbers (03xx-xxxxxxx)
+      phones.push(`(${i}, '03${randomInt(0, 4)}${randomInt(0, 9)}-${randomInt(1000000, 9999999)}')`);
+
+      // 3. Hospitals
+      const city = random(cities);
+      hospitals.push(`('${random(hospitalBases)} ${city}', '${city}', '0${randomInt(21, 91)}-${randomInt(1000000, 9999999)}')`);
+
+      // 4. Blood Banks
+      banks.push(`('${random(bankBases)} ${city}', '${city}', ${randomInt(100, 1000)}, '0${randomInt(21, 91)}-${randomInt(1000000, 9999999)}')`);
+
+      // 5. Donations
+      donations.push(`(${randomInt(1, i)}, '2025-${String(randomInt(1, 12)).padStart(2, '0')}-${String(randomInt(1, 28)).padStart(2, '0')}', ${randomInt(1, 3) * 250}, '${city}')`);
+
+      // 6. Blood Requests
+      requests.push(`(${randomInt(1, i)}, ${randomInt(1, i)}, '${random(bloodTypes)}', ${randomInt(1, 5)}, '${random(['Low', 'Medium', 'High', 'Critical'])}', '2026-${String(randomInt(1, 4)).padStart(2, '0')}-${String(randomInt(1, 28)).padStart(2, '0')}')`);
+    }
+
+    // Fire them all into the TiDB Cloud!
+    await db.promise().query(`INSERT INTO Donor (Name, Gender, Date_of_Birth, Blood_Type) VALUES ${donors.join(',')}`);
+    await db.promise().query(`INSERT INTO Phone_Number (Donor_ID, Phone_Number) VALUES ${phones.join(',')}`);
+    await db.promise().query(`INSERT INTO Hospital (Name, Location, Contact_Number) VALUES ${hospitals.join(',')}`);
+    await db.promise().query(`INSERT INTO Blood_Bank (Name, Location, Capacity, Contact_Number) VALUES ${banks.join(',')}`);
+    await db.promise().query(`INSERT INTO Donation (Donor_ID, Date, Quantity, Location) VALUES ${donations.join(',')}`);
+    await db.promise().query(`INSERT INTO Blood_Request (Hospital_ID, Bank_ID, Blood_Type_Required, Quantity_Required, Urgency_Level, Request_Date) VALUES ${requests.join(',')}`);
+
+    res.send("SUCCESS! 50 random Pakistani records have been permanently added to your database!");
+  } catch (err) {
+    console.error("Seeding error:", err);
+    res.send(`FAILED: ${err.message}`);
+  }
+});
+
+// ==========================================
 // SERVER STARTUP
 // ==========================================
 app.listen(port, () => {
