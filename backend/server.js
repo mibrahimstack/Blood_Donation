@@ -9,8 +9,8 @@ app.use(bodyParser.json());
 
 const port = process.env.PORT || 3000;
 
-// MySQL Connection
-const db = mysql.createConnection({
+// MySQL Connection (Using a Pool for Vercel)
+const db = mysql.createPool({
     host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com', 
     port: 4000,
     user: '285uJ5CPMQ3A355.root',                            
@@ -18,12 +18,10 @@ const db = mysql.createConnection({
     database: 'blood_donation',
     ssl: { 
         rejectUnauthorized: true 
-    }
-});
-
-db.connect(err => {
-  if (err) throw err;
-  console.log('Connected to MySQL');
+    },
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
 // ----------- ROUTES -----------
