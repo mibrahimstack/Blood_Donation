@@ -7,15 +7,17 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+const port = process.env.PORT || 3000;
+
 // MySQL Connection
 const db = mysql.createConnection({
-    host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com', // Paste your exact TiDB Host here
+    host: 'gateway01.ap-southeast-1.prod.aws.tidbcloud.com', 
     port: 4000,
-    user: '285uJ5CPMQ3A355.root',                            // Paste your exact TiDB User here
-    password: 'Bn8XDE57EDSicSfY',                          // Paste your generated TiDB password
+    user: '285uJ5CPMQ3A355.root',                            
+    password: process.env.DB_PASSWORD,                          
     database: 'blood_donation',
     ssl: { 
-        rejectUnauthorized: true // This is REQUIRED for cloud databases!
+        rejectUnauthorized: true 
     }
 });
 
@@ -267,7 +269,9 @@ app.get('/requests', (req, res) => {
 // ==========================================
 // SERVER STARTUP
 // ==========================================
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`SERVER V3 WITH SEARCH IS RUNNING ON PORT ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });
+
+// THIS IS THE REQUIRED LINE FOR VERCEL:
+module.exports = app;

@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById(sectionId).style.display = 'none';
     };
 
-    const API_BASE = 'http://127.0.0.1:3000'; // Central API URL
+    const API_BASE = 'https://blood-donation-38rx.vercel.app';  // Central API URL
 
     // ==========================================
     // 4. FORM SUBMISSIONS (ADDING DATA)
