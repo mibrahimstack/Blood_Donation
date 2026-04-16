@@ -1,7 +1,7 @@
 /* Basic Reset & Smooth Scrolling */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 40px; /* Gives a little breathing room when it scrolls down */
+  scroll-padding-top: 20px;
 }
 
 body {
@@ -10,6 +10,7 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f5f5f5;
   color: #333;
+  overflow-x: hidden; /* Prevents horizontal scrolling on mobile */
 }
 
 /* Navbar */
@@ -20,12 +21,20 @@ body {
   background-color: white;
   padding: 15px 50px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap; /* Allows items to move to next line if needed */
 }
 
 .logo {
   font-size: 24px;
   font-weight: bold;
-  color: #e74c3c; /* Matches your project's red theme */
+  color: #e74c3c;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .nav-links a {
@@ -34,6 +43,7 @@ body {
   margin-left: 25px;
   font-weight: 500;
   transition: color 0.3s;
+  white-space: nowrap; /* Keeps link text on one line */
 }
 
 .nav-links a:hover {
@@ -53,9 +63,38 @@ body {
   color: white;
 }
 
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 15px 20px;
+    flex-direction: column; /* Stacks logo above links */
+    gap: 15px;
+    text-align: center;
+  }
+
+  .nav-links {
+    margin-left: 0;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .nav-links a {
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: 14px;
+  }
+
+  .hero-content h1 {
+    font-size: 32px; /* Smaller heading for mobile */
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+}
+
 /* Hero Banner */
 .hero {
-  /* High-quality welcoming image with a dark overlay so text is readable */
   background-image:
     linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
     url("https://images.unsplash.com/photo-1615461066841-6116e61058f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80");
